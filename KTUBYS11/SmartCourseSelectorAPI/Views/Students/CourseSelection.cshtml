@@ -1,0 +1,128 @@
+﻿@model SmartCourseSelectorWeb.Models.Student
+
+@{
+    ViewData["Title"] = "Course Selection";
+}
+
+<link href="~/css/course-selection.css" rel="stylesheet" />
+
+<style>
+    .content-container {
+        background: #f8f8f8;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-container {
+        margin-top: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        text-align: left;
+    }
+
+        table th, table td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: yellowgreen;
+            color: #333;
+            font-weight: bold;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+        .btn-primary:hover {
+            background-color: yellowgreen;
+        }
+</style>
+<a href="https://localhost:7199/Account/LoginUser" class="back-link">Logout</a>
+<div class="container content-container">
+    <div class="student-info">
+        <h2>Course Selection</h2>
+        <h4>Student Information</h4>
+        <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+        <p><strong>Student ID:</strong> @Model.StudentID</p>
+        <p><strong>Department:</strong> @Model.Department</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Enrollment Date:</strong> @Model.EnrollmentDate.ToString("d")</p>
+        <hr />
+        
+        @if (Model.Advisor != null)
+        {
+            <h4>Advisor Information</h4>
+            <p><strong>Name:</strong> @Model.Advisor.FullName</p>
+            <p><strong>Department:</strong> @Model.Advisor.Department</p>
+            <p><strong>Email:</strong> @Model.Advisor.Email</p>
+            <hr />
+        }
+        else
+        {
+            <p class="text-danger">Advisor information not available.</p>
+            <hr />
+        }
+    </div>
+    <a href="@Url.Action("SelectCourses", "Students")" class="back-link">Select Courses</a>
+    @if (Model.StudentCourseSelections == null || !Model.StudentCourseSelections.Any())
+    {
+        <div class="alert alert-warning">
+            There is no any selected courses.
+        </div>
+    }
+    else
+    {
+        <div class="table-container">
+            <form method="post" asp-action="SubmitCourseSelection" asp-controller="Students">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Mandatory</th>
+                            <th>Credit</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var selection in Model.StudentCourseSelections)
+                        {
+                            <tr>
+                                <td>@selection.Course.CourseName</td>
+                                <td>@(selection.Course.IsMandatory ? "Mandatory" : "Elective")</td>
+                                <td>@selection.Course.Credit</td>
+                                <td>
+                                    <input type="checkbox" name="SelectedCourseIds" value="@selection.CourseID" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="form-group">
+                    <input type="submit" value="Submit Selection" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    }
+</div>
