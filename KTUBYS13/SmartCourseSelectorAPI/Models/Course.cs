@@ -1,4 +1,5 @@
 ﻿
+using StudentIMS.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace SmartCourseSelectorWeb.Models
@@ -16,5 +17,6 @@ namespace SmartCourseSelectorWeb.Models
         public int? Quota { get; set; } 
 
         public ICollection<StudentCourseSelection> StudentCourseSelections { get; set; } = new List<StudentCourseSelection>();
+        public ICollection<UnapprovedSelections> UnapprovedSelections { get; set; } = new List<UnapprovedSelections>();
     }
 }

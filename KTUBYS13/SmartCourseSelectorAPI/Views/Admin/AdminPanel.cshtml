@@ -1,0 +1,275 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Admin Panel</h1>
+
+        <div class="row mt-4">
+            <!-- Student Management -->
+            <div class="col-md-6">
+                <h3>Student Management</h3>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <button class="btn btn-success btn-sm" onclick="showPanel('addStudentPanel')">Add Student</button>
+                        <button class="btn btn-danger btn-sm" onclick="showPanel('removeStudentPanel')">Remove Student</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-primary btn-sm" onclick="showPanel('listStudentPanel')">List Students</button>
+                        <button class="btn btn-info btn-sm" onclick="showPanel('viewStudentPanel')">View Student Info</button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Advisor Management -->
+            <div class="col-md-6">
+                <h3>Advisor Management</h3>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <button class="btn btn-success btn-sm" onclick="showPanel('addAdvisorPanel')">Add Advisor</button>
+                        <button class="btn btn-danger btn-sm" onclick="showPanel('removeAdvisorPanel')">Remove Advisor</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-primary btn-sm" onclick="showPanel('listAdvisorPanel')">List Advisors</button>
+                        <button class="btn btn-info btn-sm" onclick="showPanel('viewAdvisorPanel')">View Advisor Info</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <!-- Course Management -->
+            <div class="col-md-12">
+                <h3>Course Management</h3>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <button class="btn btn-success btn-sm" onclick="showPanel('addCoursePanel')">Add Course</button>
+                        <button class="btn btn-danger btn-sm" onclick="showPanel('removeCoursePanel')">Remove Course</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-primary btn-sm" onclick="showPanel('listCoursePanel')">List Courses</button>
+                        <button class="btn btn-info btn-sm" onclick="showPanel('viewCoursePanel')">View Course Info</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Panels -->
+        <div id="addStudentPanel" class="panel" style="display:none;">
+            <h4>Add Student</h4>
+            <form>
+                <div class="mb-3">
+                    <label for="studentFirstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="studentFirstName">
+                </div>
+                <div class="mb-3">
+                    <label for="studentLastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="studentLastName">
+                </div>
+                <div class="mb-3">
+                    <label for="studentEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="studentEmail">
+                </div>
+                <div class="mb-3">
+                    <label for="advisorID" class="form-label">Advisor ID</label>
+                    <input type="text" class="form-control" id="advisorID">
+                </div>
+                <div class="mb-3">
+                    <label for="department" class="form-label">Department</label>
+                    <input type="text" class="form-control" id="department">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+        <div id="removeStudentPanel" class="panel" style="display:none;">
+            <h4>Remove Student</h4>
+            <form>
+                <div class="mb-3">
+                    <label for="studentID" class="form-label">Student ID</label>
+                    <input type="text" class="form-control" id="studentID">
+                </div>
+                <button type="submit" class="btn btn-danger">Remove</button>
+            </form>
+        </div>
+
+        <div id="viewStudentPanel" class="panel" style="display:none;">
+            <h4>View Student</h4>
+            <form>
+                <div class="mb-3">
+                    <label for="viewStudentID" class="form-label">Student ID</label>
+                    <input type="text" class="form-control" id="viewStudentID">
+                </div>
+                <button type="submit" class="btn btn-info">View</button>
+            </form>
+        </div>
+
+        <div id="listStudentPanel" class="panel" style="display:none;">
+            <h4>List Students</h4>
+            <p>Student list will be displayed here.</p>
+        </div>
+
+        <div id="addAdvisorPanel" class="panel" style="display:none;">
+            <h4>Add Advisor</h4>
+            <form>
+                <div class="mb-3">
+                    <label for="advisorName" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="advisorName">
+                </div>
+                <div class="mb-3">
+                    <label for="advisorTitle" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="advisorTitle">
+                </div>
+                <div class="mb-3">
+                    <label for="advisorDepartment" class="form-label">Department</label>
+                    <input type="text" class="form-control" id="advisorDepartment">
+                </div>
+                <div class="mb-3">
+                    <label for="advisorEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="advisorEmail">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+        <!-- Remove Advisor Panel -->
+        <div id="removeAdvisorPanel" class="panel" style="display:none;">
+            <h4>Remove Advisor</h4>
+            <form>
+                <div class="mb-3">
+                    <label for="removeAdvisorID" class="form-label">Advisor ID</label>
+                    <input type="text" class="form-control" id="removeAdvisorID">
+                </div>
+                <button type="submit" class="btn btn-danger">Remove</button>
+            </form>
+        </div>
+
+        <div id="removeCoursePanel" class="panel" style="display:none;">
+            <h4>Remove Course</h4>
+            <form>
+                <div class="mb-3">
+                    <label for="removeCourseID" class="form-label">Course ID</label>
+                    <input type="text" class="form-control" id="removeCourseID">
+                </div>
+                <button type="submit" class="btn btn-danger">Remove</button>
+            </form>
+        </div>
+
+        <div id="viewAdvisorPanel" class="panel" style="display:none;">
+            <h4>View Advisor</h4>
+            <form>
+                <div class="mb-3">
+                    <label for="ViewCourseID" class="form-label">Course ID</label>
+                    <input type="text" class="form-control" id="removeCourseID">
+                </div>
+                <button type="submit" class="btn btn-info">View</button>
+            </form>
+        </div>
+
+        <div id="listAdvisorPanel" class="panel" style="display:none;">
+            <h4>List Advisors</h4>
+            <p>Advisor list will be displayed here.</p>
+        </div>
+
+        <div id="addCoursePanel" class="panel" style="display:none;">
+            <h4>Add Course</h4>
+            <form>
+                <div class="mb-3">
+                    <label for="courseCode" class="form-label">Course Code</label>
+                    <input type="text" class="form-control" id="courseCode">
+                </div>
+                <div class="mb-3">
+                    <label for="courseName" class="form-label">Course Name</label>
+                    <input type="text" class="form-control" id="course
+                    <div id="addCoursePanel" class="panel" style="display:none;">
+                        <h4>Add Course</h4>
+                        <form>
+                            <div class="mb-3">
+                                <label for="courseCode" class="form-label">Course Code</label>
+                                <input type="text" class="form-control" id="courseCode">
+                            </div>
+                            <div class="mb-3">
+                                <label for="courseName" class="form-label">Course Name</label>
+                                <input type="text" class="form-control" id="courseName">
+                            </div>
+                            <div class="mb-3">
+                                <label for="isMandatory" class="form-label">Is Mandatory</label>
+                                <select class="form-control" id="isMandatory">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="courseCredit" class="form-label">Credit</label>
+                                <input type="number" class="form-control" id="courseCredit">
+                            </div>
+                            <div class="mb-3">
+                                <label for="courseDepartment" class="form-label">Department</label>
+                                <input type="text" class="form-control" id="courseDepartment">
+                            </div>
+                            <div class="mb-3">
+                                <label for="courseQuota" class="form-label">Quota</label>
+                                <input type="number" class="form-control" id="courseQuota">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+
+                    <div id="removeCoursePanel" class="panel" style="display:none;">
+                        <h4>Remove Course</h4>
+                        <form>
+                            <div class="mb-3">
+                                <label for="removeCourseID" class="form-label">Course ID</label>
+                                <input type="text" class="form-control" id="removeCourseID">
+                            </div>
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </div>
+
+                    <div id="viewCoursePanel" class="panel" style="display:none;">
+                        <h4>View Course</h4>
+                        <form>
+                            <div class="mb-3">
+                                <label for="viewCourseID" class="form-label">Course ID</label>
+                                <input type="text" class="form-control" id="viewCourseID">
+                            </div>
+                            <button type="submit" class="btn btn-info">View</button>
+                        </form>
+                    </div>
+
+                    <div id="listCoursePanel" class="panel" style="display:none;">
+                        <h4>List Courses</h4>
+                        <p>Course list will be displayed here.</p>
+                    </div>
+
+                    <script>
+                        function showPanel(panelId) {
+                            // Hide all panels
+                            document.querySelectorAll('.panel').forEach(panel => {
+                                panel.style.display = 'none';
+                            });
+                            // Show the selected panel
+                            document.getElementById(panelId).style.display = 'block';
+                        }
+                    </script>
+            </form>
+        </div>
+
+</body>
+</html>
+
