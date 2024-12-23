@@ -1,0 +1,206 @@
+﻿@model SmartCourseSelectorWeb.Models.Student
+
+@{
+    ViewData["Title"] = "Student Courses";
+}
+
+<style>
+    body {
+        background-color: #f3f4f6;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    .container {
+        background: #fff;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        max-width: 75%;
+        margin: 40px auto;
+        color: #333;
+    }
+
+    h2, h4 {
+        color: #8B0000; /* Bordo renk */
+        font-weight: bold;
+    }
+
+    p {
+        color: black;
+        font-size: 1.1rem;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+        border-radius: 5px;
+        padding: 15px;
+    }
+
+    .table {
+        width: 100%;
+        margin-bottom: 20px;
+        border-collapse: collapse;
+        background-color: #fff;
+    }
+
+    .table-bordered th, .table-bordered td {
+        border: 1px solid #dee2e6;
+        padding: 12px;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .table thead th {
+        background-color: #8B0000; /* Bordo renk */
+        color: black;
+        font-weight: bold;
+    }
+
+    .btn-primary {
+        background-color: #8B0000; /* Bordo renk */
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease-in-out;
+        text-decoration: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #660000; /* Daha koyu bordo */
+        }
+
+    .back-link {
+        color: #8B0000; /* Bordo renk */
+        text-decoration: none;
+        font-size: 1rem;
+        margin-top: 15px;
+        display: inline-block;
+    }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+    .table tbody tr:hover {
+        background-color: black;
+    }
+
+    .success-message {
+        color: green;
+        font-weight: bold;
+        margin-top: 20px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    hr {
+        border: 1px solid #8B0000; /* Bordo renk */
+    }
+</style>
+
+<div class="container">
+    <h2>Student Courses</h2>
+    <h4>Student Information</h4>
+    <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+    <p><strong>Student ID:</strong> @Model.StudentID</p>
+    <p><strong>Department:</strong> @Model.Department</p>
+
+    <hr />
+
+    @if (Model.StudentCourseSelections == null || !Model.StudentCourseSelections.Any())
+    {
+        <div class="alert alert-warning">
+            No courses have been selected by this student.
+        </div>
+    }
+    else
+    {
+        <h4>Selected Courses</h4>
+
+        <!-- Form ile checkbox seçimini gönder -->
+        <form asp-action="ApproveStudentsCourses" asp-controller="Advisors" method="post" id="approveForm">
+            <input type="hidden" name="id" value="@Model.AdvisorID" />
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Course Name</th>
+                        <th>Credit</th>
+                        <th>Mandatory</th>
+                        <th>Selection Date</th>
+                        <th>Approve?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var courseSelection in Model.StudentCourseSelections)
+                    {
+                        <tr>
+                            <td>@courseSelection.Course.CourseName</td>
+                            <td>@courseSelection.Course.Credit</td>
+                            <td>@(courseSelection.Course.IsMandatory ? "Yes" : "No")</td>
+                            <td>@courseSelection.SelectionDate.ToString("d")</td>
+                            <td>
+                                @if (courseSelection.IsApproved)
+                                {
+                                    <input type="checkbox" name="SelectedCourseIds" value="@courseSelection.CourseID" checked />
+                                }
+                                else
+                                {
+                                    <input type="checkbox" name="SelectedCourseIds" value="@courseSelection.CourseID" />
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="form-group">
+                <button type="submit" id="submitBtn" class="btn btn-primary">Approve</button>
+            </div>
+        </form>
+        <button onclick="window.location.href='@Url.Action("ApproveCourses", "Advisors", new { id = Model.AdvisorID })'" class="btn btn-primary back-link">Back</button>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="success-message hidden">
+            Courses approved successfully!
+        </div>
+    }
+</div>
+
+<script>
+    document.getElementById("approveForm").onsubmit = function (event) {
+        var selectedCheckboxes = document.querySelectorAll('input[name="SelectedCourseIds"]:checked');
+        var uncheckedCheckboxes = document.querySelectorAll('input[name="SelectedCourseIds"]:not(:checked)');
+        uncheckedCheckboxes.forEach(function (checkbox) {
+            var courseRow = checkbox.closest('tr');
+            var courseId = checkbox.value;
+            var isApprovedInput = document.createElement('input');
+            isApprovedInput.type = 'hidden';
+            isApprovedInput.name = 'UncheckedCourseIds';
+            isApprovedInput.value = courseId + ":" + false;
+            courseRow.appendChild(isApprovedInput);
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var successMessage = "@TempData["Success"]";
+        if (successMessage) {
+            showSuccessMessage();
+        }
+    });
+
+    function showSuccessMessage() {
+        var successMessageElement = document.getElementById("successMessage");
+        successMessageElement.classList.remove("hidden");
+        successMessageElement.textContent = "@TempData["Success"]";
+        setTimeout(function () {
+            successMessageElement.classList.add("hidden");
+        }, 3000);
+    }
+</script>

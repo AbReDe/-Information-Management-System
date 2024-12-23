@@ -18,4 +18,11 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Admin\AdminPanelcpy.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,617 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Admin Panel</h1>
+
+        <div class="row mt-4">
+            <!-- Student Management -->
+            <div class="col-md-6">
+                <h3>Student Management</h3>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <button class="btn btn-success btn-sm" onclick="showPanel('addStudentPanel')">Add Student</button>
+                        <button class="btn btn-danger btn-sm" onclick="showPanel('removeStudentPanel')">Remove Student</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-primary btn-sm" onclick="showPanel('listStudentPanel')">List Students</button>
+                        <button class="btn btn-info btn-sm" onclick="showPanel('viewStudentPanel')">View Student Info</button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Advisor Management -->
+            <div class="col-md-6">
+                <h3>Advisor Management</h3>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <button class="btn btn-success btn-sm" onclick="showPanel('addAdvisorPanel')">Add Advisor</button>
+                        <button class="btn btn-danger btn-sm" onclick="showPanel('removeAdvisorPanel')">Remove Advisor</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-primary btn-sm" onclick="showPanel('listAdvisorPanel')">List Advisors</button>
+                        <button class="btn btn-info btn-sm" onclick="showPanel('viewAdvisorPanel')">View Advisor Info</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <!-- Course Management -->
+            <div class="col-md-12">
+                <h3>Course Management</h3>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <button class="btn btn-success btn-sm" onclick="showPanel('addCoursePanel')">Add Course</button>
+                        <button class="btn btn-danger btn-sm" onclick="showPanel('removeCoursePanel')">Remove Course</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-primary btn-sm" onclick="showPanel('listCoursePanel')">List Courses</button>
+                        <button class="btn btn-info btn-sm" onclick="showPanel('viewCoursePanel')">View Course Info</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Panels -->
+        <div id="addStudentPanel" class="panel" style="display:none;">
+            <h4>Add Student</h4>
+            <form id="addStudentForm">
+                <div class="mb-3">
+                    <label for="studentFirstName" class="form-label">First Name</label>
+                    <input type="text" class="form-control" id="studentFirstName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="studentLastName" class="form-label">Last Name</label>
+                    <input type="text" class="form-control" id="studentLastName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="studentEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="studentEmail" required>
+                </div>
+                <div class="mb-3">
+                    <label for="advisorID" class="form-label">Advisor ID</label>
+                    <input type="text" class="form-control" id="advisorID">
+                </div>
+                <div class="mb-3">
+                    <label for="department" class="form-label">Department</label>
+                    <input type="text" class="form-control" id="department" value="Software Engineering">
+                </div>
+                <button type="button" class="btn btn-primary" id="submitStudent">Submit</button>
+            </form>
+        </div>
+
+        <script>
+            document.getElementById('submitStudent').addEventListener('click', async () => {
+                // Form alanlarını oku
+                const studentFirstName = document.getElementById('studentFirstName').value;
+                const studentLastName = document.getElementById('studentLastName').value;
+                const studentEmail = document.getElementById('studentEmail').value;
+                const advisorID = document.getElementById('advisorID').value || null;
+                const department = document.getElementById('department').value || "Software Engineering";
+                const enrollmentDate = new Date().toISOString();
+
+                // Verileri bir nesneye dönüştür
+                const studentData = {
+                    firstName: studentFirstName,
+                    lastName: studentLastName,
+                    email: studentEmail,
+                    advisorID: advisorID,
+                    enrollmentDate: enrollmentDate,
+                    department: department
+                };
+
+                try {
+                    // API'ye POST isteği gönder
+                    const response = await fetch('/api/Students', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(studentData)
+                    });
+
+                    if (response.ok) {
+                        alert('Student added successfully!');
+                        document.getElementById('addStudentForm').reset(); // Formu temizle
+                    } else {
+                        const errorData = await response.json();
+                        alert('Failed to add student: ' + errorData.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An unexpected error occurred.');
+                }
+            });
+        </script>
+
+        <!-- Remove Student Panel -->
+        <div id="removeStudentPanel" class="panel" style="display:none;">
+            <h4>Remove Student</h4>
+            <form id="removeStudentForm">
+                <div class="mb-3">
+                    <label for="studentID" class="form-label">Student ID</label>
+                    <input type="number" class="form-control" id="studentID" required>
+                </div>
+                <button type="button" class="btn btn-danger" id="removeStudentButton">Remove</button>
+            </form>
+        </div>
+
+        <script>
+            document.getElementById('removeStudentButton').addEventListener('click', async () => {
+                const studentID = document.getElementById('studentID').value;
+
+                if (!studentID) {
+                    alert('Please enter a valid Student ID.');
+                    return;
+                }
+
+                const confirmation = confirm(Are you sure you want to delete the Student with ID ${studentID}?);
+                if (!confirmation) {
+                    return;
+                }
+
+                try {
+                    // API'ye DELETE isteği gönder
+                    const response = await fetch(/api/Students/${studentID}, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        alert('Student removed successfully!');
+                        document.getElementById('removeStudentForm').reset(); // Formu temizle
+                    } else {
+                        const errorData = await response.json();
+                        alert('Failed to remove student: ' + (errorData.message || "Unexpected error"));
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An unexpected error occurred.');
+                }
+            });
+        </script>
+
+        <div id="viewStudentPanel" class="panel" style="display:none;">
+            <h4>View Student</h4>
+            <form>
+                <div class="mb-3">
+                    <label for="viewStudentID" class="form-label">Student ID</label>
+                    <input type="text" class="form-control" id="viewStudentID">
+                </div>
+                <button type="submit" class="btn btn-info">View</button>
+            </form>
+        </div>
+
+        <!-- List Courses Panel -->
+        <div id="listCoursePanel" class="panel" style="display:none;">
+            <h4>List Courses</h4>
+            <div>
+                <button type="button" class="btn btn-primary" id="listCoursesButton">List Courses</button>
+            </div>
+            <div id="courseListContainer" style="margin-top: 20px;">
+                <!-- Kurs listesi burada görüntülenecek -->
+            </div>
+        </div>
+
+        <script>
+            document.getElementById('listCoursesButton').addEventListener('click', async () => {
+                const courseListContainer = document.getElementById('courseListContainer');
+                courseListContainer.innerHTML = '<p>Loading...</p>'; // Yüklenme bilgisi
+
+                try {
+                    // API'ye GET isteği gönder
+                    const response = await fetch('/api/Courses');
+
+                    if (response.ok) {
+                        const courses = await response.json();
+
+                        if (courses.length === 0) {
+                            courseListContainer.innerHTML = '<p>No courses found.</p>';
+                            return;
+                        }
+
+                        // Kurs listesini tablo halinde göster
+                        const table = document.createElement('table');
+                        table.className = 'table table-bordered';
+
+                        // Tablo başlıkları
+                        table.innerHTML = `
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Mandatory</th>
+                                    <th>Credit</th>
+                                    <th>Department</th>
+                                    <th>Quota</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${courses
+                                    .map(
+                                        (course) => `
+                                        <tr>
+                                            <td>${course.CourseID}</td>
+                                            <td>${course.CourseCode}</td>
+                                            <td>${course.CourseName}</td>
+                                            <td>${course.IsMandatory ? "Yes" : "No"}</td>
+                                            <td>${course.Credit}</td>
+                                            <td>${course.Department}</td>
+                                            <td>${course.Quota || "N/A"}</td>
+                                        </tr>
+                                    `
+                                    )
+                                    .join('')}
+                            </tbody>
+                        `;
+                        courseListContainer.innerHTML = '';
+                        courseListContainer.appendChild(table);
+                    } else {
+                        const errorData = await response.json();
+                        courseListContainer.innerHTML = <p>Failed to fetch courses: ${errorData.message || "Unexpected error"}</p>;
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    courseListContainer.innerHTML = '<p>An unexpected error occurred.</p>';
+                }
+            });
+        </script>
+
+        <div id="addAdvisorPanel" class="panel" style="display:none;">
+            <h4>Add Advisor</h4>
+            <form id="addAdvisorForm">
+                <div class="mb-3">
+                    <label for="advisorName" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="advisorName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="advisorTitle" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="advisorTitle" required>
+                </div>
+                <div class="mb-3">
+                    <label for="advisorDepartment" class="form-label">Department</label>
+                    <input type="text" class="form-control" id="advisorDepartment" value="Software Engineering">
+                </div>
+                <div class="mb-3">
+                    <label for="advisorEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="advisorEmail" required>
+                </div>
+                <button type="button" class="btn btn-primary" id="submitAdvisor">Submit</button>
+            </form>
+        </div>
+
+        <script>
+            document.getElementById('submitAdvisor').addEventListener('click', async () => {
+                // Form verilerini oku
+                const advisorName = document.getElementById('advisorName').value;
+                const advisorTitle = document.getElementById('advisorTitle').value;
+                const advisorDepartment = document.getElementById('advisorDepartment').value || "Software Engineering";
+                const advisorEmail = document.getElementById('advisorEmail').value;
+
+                // Veriyi JSON formatına çevir
+                const advisorData = {
+                    fullName: advisorName,
+                    title: advisorTitle,
+                    department: advisorDepartment,
+                    email: advisorEmail
+                };
+
+                try {
+                    // API'ye POST isteği gönder
+                    const response = await fetch('/api/AdvisorController/CreateAdvisor', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(advisorData)
+                    });
+
+                    if (response.ok) {
+                        alert('Advisor added successfully!');
+                        document.getElementById('addAdvisorForm').reset(); // Formu temizle
+                    } else {
+                        const errorData = await response.json();
+                        alert('Failed to add advisor: ' + (errorData.message || "Unexpected error"));
+                    }
+                } catch (error) {
+                    console.error('Error:', error.message);
+                    alert('Failed to add advisor: ' + (errorData.message));
+                }
+            });
+        </script>
+
+        <!-- Remove Advisor Panel -->
+        <div id="removeAdvisorPanel" class="panel" style="display:none;">
+            <h4>Remove Advisor</h4>
+            <form id="removeAdvisorForm">
+                <div class="mb-3">
+                    <label for="removeAdvisorID" class="form-label">Advisor ID</label>
+                    <input type="number" class="form-control" id="removeAdvisorID" required>
+                </div>
+                <button type="button" class="btn btn-danger" id="removeAdvisorButton">Remove</button>
+            </form>
+        </div>
+
+        <script>
+            document.getElementById('removeAdvisorButton').addEventListener('click', async () => {
+                const advisorID = document.getElementById('removeAdvisorID').value;
+
+                if (!advisorID) {
+                    alert('Please enter a valid Advisor ID.');
+                    return;
+                }
+
+                const confirmation = confirm(Are you sure you want to delete Advisor with ID ${advisorID}?);
+                if (!confirmation) {
+                    return;
+                }
+
+                try {
+                    // API'ye DELETE isteği gönder
+                    const response = await fetch(/api/AdvisorController/${advisorID}, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        alert('Advisor removed successfully!');
+                        document.getElementById('removeAdvisorForm').reset(); // Formu temizle
+                    } else {
+                        const errorData = await response.json();
+                        alert('Failed to remove advisor: ' + (errorData.message || "Unexpected error"));
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An unexpected error occurred.');
+                }
+            });
+        </script>
+
+
+
+        <!-- Remove Course Panel -->
+        <div id="removeCoursePanel" class="panel" style="display:none;">
+            <h4>Remove Course</h4>
+            <form id="removeCourseForm">
+                <div class="mb-3">
+                    <label for="removeCourseID" class="form-label">Course ID</label>
+                    <input type="number" class="form-control" id="removeCourseID" required>
+                </div>
+                <button type="button" class="btn btn-danger" id="removeCourseButton">Remove</button>
+            </form>
+        </div>
+
+        <script>
+            document.getElementById('removeCourseButton').addEventListener('click', async () => {
+                const courseID = document.getElementById('removeCourseID').value;
+
+                if (!courseID) {
+                    alert('Please enter a valid Course ID.');
+                    return;
+                }
+
+                const confirmation = confirm(Are you sure you want to delete the Course with ID ${courseID}?);
+                if (!confirmation) {
+                    return;
+                }
+
+                try {
+                    // API'ye DELETE isteği gönder
+                    const response = await fetch(/api/Courses/${courseID}, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        alert('Course removed successfully!');
+                        document.getElementById('removeCourseForm').reset(); // Formu temizle
+                    } else {
+                        const errorData = await response.json();
+                        alert('Failed to remove course: ' + (errorData.message || "Unexpected error"));
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An unexpected error occurred.');
+                }
+            });
+        </script>
+
+
+        <div id="viewAdvisorPanel" class="panel" style="display:none;">
+            <h4>View Advisor</h4>
+            <form>
+                <div class="mb-3">
+                    <label for="ViewCourseID" class="form-label">Course ID</label>
+                    <input type="text" class="form-control" id="removeCourseID">
+                </div>
+                <button type="submit" class="btn btn-info">View</button>
+            </form>
+        </div>
+
+        <!-- List Advisors Panel -->
+        <div id="listAdvisorPanel" class="panel" style="display:none;">
+            <h4>List Advisors</h4>
+            <div id="advisorList">
+                <!-- Advisor list will be dynamically loaded here -->
+            </div>
+            <button class="btn btn-primary" id="loadAdvisorListButton">Load Advisors</button>
+        </div>
+
+        <script>
+            document.getElementById('loadAdvisorListButton').addEventListener('click', async () => {
+                const advisorListDiv = document.getElementById('advisorList');
+                advisorListDiv.innerHTML = '<p>Loading...</p>'; // Loading mesajı
+
+                try {
+                    // API'den GET isteği gönder
+                    const response = await fetch('/api/AdvisorController/getAdvisorList');
+                    if (response.ok) {
+                        const advisors = await response.json();
+
+                        // Eğer liste boşsa bilgilendirme mesajı
+                        if (advisors.length === 0) {
+                            advisorListDiv.innerHTML = '<p>No advisors found.</p>';
+                            return;
+                        }
+
+                        // Danışman listesini oluştur
+                        const advisorTable = document.createElement('table');
+                        advisorTable.className = 'table table-striped';
+                        advisorTable.innerHTML = `
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Full Name</th>
+                                    <th>Title</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${advisors.map(advisor => `
+                                    <tr>
+                                        <td>${advisor.advisorID}</td>
+                                        <td>${advisor.fullName}</td>
+                                        <td>${advisor.title}</td>
+                                        <td>${advisor.department}</td>
+                                        <td>${advisor.email}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        `;
+
+                        advisorListDiv.innerHTML = ''; // Önceki içeriği temizle
+                        advisorListDiv.appendChild(advisorTable); // Listeyi ekle
+                    } else {
+                        advisorListDiv.innerHTML = '<p>Failed to load advisors. Please try again later.</p>';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    advisorListDiv.innerHTML = '<p>An error occurred while loading the advisor list.</p>';
+                }
+            });
+        </script>
+
+        <div id="addCoursePanel" class="panel" style="display:none;">
+            <h4>Add Course</h4>
+            <form id="addCourseForm">
+                <div class="mb-3">
+                    <label for="courseCode" class="form-label">Course Code</label>
+                    <input type="text" class="form-control" id="courseCode" required>
+                </div>
+                <div class="mb-3">
+                    <label for="courseName" class="form-label">Course Name</label>
+                    <input type="text" class="form-control" id="courseName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="isMandatory" class="form-label">Is Mandatory</label>
+                    <select class="form-control" id="isMandatory">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="courseCredit" class="form-label">Credit</label>
+                    <input type="number" class="form-control" id="courseCredit" required>
+                </div>
+                <div class="mb-3">
+                    <label for="courseDepartment" class="form-label">Department</label>
+                    <input type="text" class="form-control" id="courseDepartment" value="Software Engineering">
+                </div>
+                <div class="mb-3">
+                    <label for="courseQuota" class="form-label">Quota</label>
+                    <input type="number" class="form-control" id="courseQuota">
+                </div>
+                <button type="button" class="btn btn-primary" id="submitCourse">Submit</button>
+            </form>
+        </div>
+
+        <script>
+            document.getElementById('submitCourse').addEventListener('click', async () => {
+                // Form alanlarını oku
+                const courseCode = document.getElementById('courseCode').value;
+                const courseName = document.getElementById('courseName').value;
+                const isMandatory = document.getElementById('isMandatory').value === "true";
+                const courseCredit = parseInt(document.getElementById('courseCredit').value, 10);
+                const courseDepartment = document.getElementById('courseDepartment').value || "Software Engineering";
+                const courseQuota = parseInt(document.getElementById('courseQuota').value, 10) || null;
+
+                // Verileri bir nesneye dönüştür
+                const courseData = {
+                    courseCode: courseCode,
+                    courseName: courseName,
+                    isMandatory: isMandatory,
+                    credit: courseCredit,
+                    department: courseDepartment,
+                    quota: courseQuota
+                };
+
+                try {
+                    // API'ye POST isteği gönder
+                    const response = await fetch('/api/Courses', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(courseData)
+                    });
+
+                    if (response.ok) {
+                        alert('Course added successfully!');
+                        document.getElementById('addCourseForm').reset(); // Formu temizle
+                    } else {
+                        const errorData = await response.json();
+                        alert('Failed to add course: ' + errorData.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An unexpected error occurred.');
+                }
+            });
+        </script>
+
+
+
+        <div id="viewCoursePanel" class="panel" style="display:none;">
+            <h4>View Course</h4>
+            <form>
+                <div class="mb-3">
+                    <label for="viewCourseID" class="form-label">Course ID</label>
+                    <input type="text" class="form-control" id="viewCourseID">
+                </div>
+                <button type="submit" class="btn btn-info">View</button>
+            </form>
+        </div>
+
+        <div id="listCoursePanel" class="panel" style="display:none;">
+            <h4>List Courses</h4>
+            <p>Course list will be displayed here.</p>
+        </div>
+
+        <script>
+            function showPanel(panelId) {
+                // Hide all panels
+                document.querySelectorAll('.panel').forEach(panel => {
+                    panel.style.display = 'none';
+                });
+                // Show the selected panel
+                document.getElementById(panelId).style.display = 'block';
+            }
+        </script>
+</body>
+</html>

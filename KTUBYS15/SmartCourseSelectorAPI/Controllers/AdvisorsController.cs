@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
 using Microsoft.EntityFrameworkCore;
 using SmartCourseSelectorWeb.Models;
+using StudentIMS.Models;
 
 namespace SmartCourseSelectorWeb.Controllers
 {
@@ -29,6 +31,69 @@ namespace SmartCourseSelectorWeb.Controllers
             }
             return View(advisor);
         }
+        [HttpPost("ApproveStudentsCourses")]
+        public IActionResult ApproveStudentsCourses(
+            [FromForm] List<int> SelectedCourseIds,
+            [FromForm] List<string> UncheckedCourseIds,
+            [FromForm] int id
+            )
+        {
+            if (SelectedCourseIds == null || !SelectedCourseIds.Any())
+            {
+                return BadRequest("No courses selected for approval.");
+            }
+
+            // Seçilen kursları onayla (IsApproved = true)
+            foreach (var courseId in SelectedCourseIds)
+            {
+                var courseSelection = _context.StudentCourseSelections
+                    .FirstOrDefault(s => s.CourseID == courseId);
+                if (courseSelection != null)
+                {
+                    courseSelection.IsApproved = true;
+                }
+            }
+
+            // Seçilmemiş kursları onayla (IsApproved = false)
+            if (UncheckedCourseIds != null && UncheckedCourseIds.Any())
+            {
+                foreach (var uncheckedCourse in UncheckedCourseIds)
+                {
+                    var parts = uncheckedCourse.Split(":");
+                    int courseId = int.Parse(parts[0]);
+                    bool isApproved = bool.Parse(parts[1]);
+
+                    var courseSelection = _context.StudentCourseSelections
+                        .FirstOrDefault(s => s.CourseID == courseId);
+                    if (courseSelection != null)
+                    {
+                        courseSelection.IsApproved = isApproved;
+                    }
+                }
+            }
+
+            // UnapprovedSelections tablosundaki kursları sil
+            foreach (var courseId in SelectedCourseIds)
+            {
+                var unapprovedCourse = _context.UnapprovedSelections
+                    .FirstOrDefault(s => s.CourseID == courseId);
+                if (unapprovedCourse != null)
+                {
+                    _context.UnapprovedSelections.Remove(unapprovedCourse); // Bu kaydı sil
+                }
+                
+            }
+
+            // Veritabanı değişikliklerini kaydet
+            _context.SaveChanges();
+
+
+            return RedirectToAction("ApproveCourses", "Advisors",new { id = id });
+        }
+
+
+
+
 
         [HttpGet("ViewStudentCourses/{studentId}")]
         public IActionResult ViewStudentCourses(int studentId)
@@ -130,3 +195,8 @@ namespace SmartCourseSelectorWeb.Controllers
         }
     }
 }
+
+
+
+
+//furkan bilici tarafından yapılmıştır

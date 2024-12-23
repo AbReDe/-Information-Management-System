@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Admin Panel</h1>
+            <!-- Advisor Management -->
+            <div class="col-md-6">
+                <h3>Advisor Management</h3>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <button class="btn btn-success btn-sm" onclick="showPanel('addAdvisorPanel')">Add Advisor</button>
+                        <button class="btn btn-danger btn-sm" onclick="showPanel('removeAdvisorPanel')">Remove Advisor</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-primary btn-sm" onclick="showPanel('listAdvisorPanel')">List Advisors</button>
+                        <button class="btn btn-info btn-sm" onclick="showPanel('viewAdvisorPanel')">View Advisor Info</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div id="addAdvisorPanel" class="panel" style="display:none;">
+            <h4>Add Advisor</h4>
+            <form id="addAdvisorForm">
+                <div class="mb-3">
+                    <label for="advisorName" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="advisorName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="advisorTitle" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="advisorTitle" required>
+                </div>
+                <div class="mb-3">
+                    <label for="advisorDepartment" class="form-label">Department</label>
+                    <input type="text" class="form-control" id="advisorDepartment" value="Software Engineering">
+                </div>
+                <div class="mb-3">
+                    <label for="advisorEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="advisorEmail" required>
+                </div>
+                <button type="button" class="btn btn-primary" id="submitAdvisor">Submit</button>
+            </form>
+        </div>
+        <script>
+            document.getElementById('submitAdvisor').addEventListener('click', async () => {
+                // Form verilerini oku
+                const advisorName = document.getElementById('advisorName').value;
+                const advisorTitle = document.getElementById('advisorTitle').value;
+                const advisorDepartment = document.getElementById('advisorDepartment').value || "Software Engineering";
+                const advisorEmail = document.getElementById('advisorEmail').value;
+
+                // Veriyi JSON formatına çevir
+                const advisorData = {
+                    fullName: advisorName,
+                    title: advisorTitle,
+                    department: advisorDepartment,
+                    email: advisorEmail
+                };
+                try {
+                    // API'ye POST isteği gönder
+                    const response = await fetch('/api/AdvisorController/CreateAdvisor', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(advisorData)
+                    });
+
+                    if (response.ok) {
+                        alert('Advisor added successfully!');
+                        document.getElementById('addAdvisorForm').reset(); // Formu temizle
+                    } else {
+                        const errorData = await response.json();
+                        alert('Failed to add advisor: ' + (errorData.message || "Unexpected error"));
+                    }
+                } catch (error) {
+                    console.error('Error:', error.message);
+                    alert('Failed to add advisor: ' + (errorData.message));
+                }
+            });
+        </script>
+        <!-- Remove Advisor Panel -->
+        <div id="removeAdvisorPanel" class="panel" style="display:none;">
+            <h4>Remove Advisor</h4>
+            <form id="removeAdvisorForm">
+                <div class="mb-3">
+                    <label for="removeAdvisorID" class="form-label">Advisor ID</label>
+                    <input type="number" class="form-control" id="removeAdvisorID" required>
+                </div>
+                <button type="button" class="btn btn-danger" id="removeAdvisorButton">Remove</button>
+            </form>
+        </div>
+
+        <script>
+            document.getElementById('removeAdvisorButton').addEventListener('click', async () => {
+                const advisorID = document.getElementById('removeAdvisorID').value;
+
+                if (!advisorID) {
+                    alert('Please enter a valid Advisor ID.');
+                    return;
+                }
+
+                const confirmation = confirm(Are you sure you want to delete Advisor with ID ${advisorID}?);
+                if (!confirmation) {
+                    return;
+                }
+
+                try {
+                    // API'ye DELETE isteği gönder
+                    const response = await fetch(/api/AdvisorController/${advisorID}, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        alert('Advisor removed successfully!');
+                        document.getElementById('removeAdvisorForm').reset(); // Formu temizle
+                    } else {
+                        const errorData = await response.json();
+                        alert('Failed to remove advisor: ' + (errorData.message || "Unexpected error"));
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An unexpected error occurred.');
+                }
+            });
+        </script>
+        <div id="viewAdvisorPanel" class="panel" style="display:none;">
+            <h4>View Advisor</h4>
+            <form>
+                <div class="mb-3">
+                    <label for="ViewAdvisorID" class="form-label">Advisor ID</label>
+                    <input type="text" class="form-control" id="removeCourseID">
+                </div>
+                <button type="submit" class="btn btn-info">View</button>
+            </form>
+        </div>
+        <!-- List Advisors Panel -->
+        <div id="listAdvisorPanel" class="panel" style="display:none;">
+            <h4>List Advisors</h4>
+            <div id="advisorList">
+                <!-- Advisor list will be dynamically loaded here -->
+            </div>
+            <button class="btn btn-primary" id="loadAdvisorListButton">Load Advisors</button>
+        </div>
+        <script>
+            document.getElementById('loadAdvisorListButton').addEventListener('click', async () => {
+                const advisorListDiv = document.getElementById('advisorList');
+                advisorListDiv.innerHTML = '<p>Loading...</p>'; // Loading mesajı
+
+                try {
+                    // API'den GET isteği gönder
+                    const response = await fetch('/api/AdvisorController/getAdvisorList');
+                    if (response.ok) {
+                        const advisors = await response.json();
+
+                        // Eğer liste boşsa bilgilendirme mesajı
+                        if (advisors.length === 0) {
+                            advisorListDiv.innerHTML = '<p>No advisors found.</p>';
+                            return;
+                        }
+
+                        // Danışman listesini oluştur
+                        const advisorTable = document.createElement('table');
+                        advisorTable.className = 'table table-striped';
+                        advisorTable.innerHTML = `
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Full Name</th>
+                                    <th>Title</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${advisors.map(advisor => `
+                                    <tr>
+                                        <td>${advisor.advisorID}</td>
+                                        <td>${advisor.fullName}</td>
+                                        <td>${advisor.title}</td>
+                                        <td>${advisor.department}</td>
+                                        <td>${advisor.email}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>`;
+                        advisorListDiv.innerHTML = ''; // Önceki içeriği temizle
+                        advisorListDiv.appendChild(advisorTable); // Listeyi ekle
+                    } else {
+                        advisorListDiv.innerHTML = '<p>Failed to load advisors. Please try again later.</p>';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    advisorListDiv.innerHTML = '<p>An error occurred while loading the advisor list.</p>';
+                }
+            });
+        </script>
+        <script>
+            function showPanel(panelId) {
+                // Hide all panels
+                document.querySelectorAll('.panel').forEach(panel => {
+                    panel.style.display = 'none';
+                });
+                // Show the selected panel
+                document.getElementById(panelId).style.display = 'block';
+            }
+        </script>
+</body>
+</html>

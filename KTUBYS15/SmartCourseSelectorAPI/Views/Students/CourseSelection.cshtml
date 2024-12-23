@@ -1,0 +1,212 @@
+﻿@model SmartCourseSelectorWeb.Models.Student
+
+@{
+    ViewData["Title"] = "Course Selection";
+}
+
+<link href="~/css/course-selection.css" rel="stylesheet" />
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f7f9fc;
+        color: #333;
+    }
+
+    .content-container {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        margin: 30px auto;
+        max-width: 900px;
+    }
+
+    h2, h4 {
+        color: #800000; /* Bordo */
+    }
+
+    p {
+        color: black;
+        font-size: 16px;
+        margin: 5px 0;
+    }
+
+    strong {
+        color: #800000; /* Bordo */
+    }
+
+    .alert {
+        background-color: #fbe9e7;
+        color: #d32f2f;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #e57373;
+        margin-bottom: 20px;
+    }
+
+    table {
+       color:black;
+
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        text-align: left;
+    }
+
+        table th, table td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #800000; /* Bordo */
+            color: black;
+            font-weight: bold;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tbody tr:hover {
+            background-color: #ffeeee;
+        }
+
+    .btn {
+        display: inline-block;
+        background-color: #800000; /* Bordo */
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border: none;
+        border-radius: 5px;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .btn:hover {
+            background-color: #a32a2a;
+        }
+
+    .back-link {
+        color: #800000; /* Bordo */
+        font-size: 14px;
+        text-decoration: none;
+        display: inline-block;
+        margin-bottom: 20px;
+        transition: color 0.3s ease;
+    }
+
+        .back-link:hover {
+            color: #a32a2a;
+        }
+
+    .notification {
+        display: flex;
+        align-items: center;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: white;
+        border: 1px solid #ccc;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+        .notification .message {
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .notification button {
+            margin-left: 5px;
+            margin-top: 5px;
+            border: none;
+            background-color: #d32f2f;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+</style>
+
+<div class="container content-container">
+    <div class="student-info">
+        <h2>Course Selection</h2>
+        <h4>Student Information</h4>
+        <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+        <p><strong>Student ID:</strong> @Model.StudentID</p>
+        <p><strong>Department:</strong> @Model.Department</p>
+        <p><strong>Email:</strong> @Model.Email</p>
+        <p><strong>Enrollment Date:</strong> @Model.EnrollmentDate.ToString("d")</p>
+        <hr />
+
+        @if (Model.Advisor != null)
+        {
+            <h4>Advisor Information</h4>
+            <p><strong>Name:</strong> @Model.Advisor.FullName</p>
+            <p><strong>Department:</strong> @Model.Advisor.Department</p>
+            <p><strong>Email:</strong> @Model.Advisor.Email</p>
+            <hr />
+        }
+        else
+        {
+            <div class="alert">
+                Advisor information not available.
+            </div>
+        }
+    </div>
+
+    <button class="btn" onclick="redirectToSelectCourses()">Select Courses</button>
+
+    @if (Model.StudentCourseSelections == null || !Model.StudentCourseSelections.Any())
+    {
+        <div class="alert">
+            There are no approved courses.
+        </div>
+    }
+    else
+    {
+        <div class="table-container">
+            <h4>Selected Courses</h4>
+            <form method="post" asp-action="SubmitCourseSelection" asp-controller="Students">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Mandatory</th>
+                            <th>Credit</th>
+                            <th>Approval Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var selection in Model.StudentCourseSelections)
+                        {
+                            <tr>
+                                <td>@selection.Course.CourseName</td>
+                                <td>@(selection.Course.IsMandatory ? "Mandatory" : "Elective")</td>
+                                <td>@selection.Course.Credit</td>
+                                <td>@(selection.IsApproved ? "Approved" : "-")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    }
+
+    <a href="https://localhost:7199/Account/LoginUser" class="back-link">Logout</a>
+</div>
+
+<script>
+    function redirectToSelectCourses() {
+        const studentId = '@Model.StudentID';
+        const url = `/api/StudentController/SelectCourses?StudentId=${encodeURIComponent(studentId)}`;
+        window.location.href = url;
+    }
+</script>

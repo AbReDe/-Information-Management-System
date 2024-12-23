@@ -1,0 +1,143 @@
+﻿@model SmartCourseSelectorWeb.Models.Advisor
+
+@{
+    ViewData["Title"] = "Approve Courses";
+}
+<style>
+    body {
+        background-color: #f3f4f6;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+    }
+
+    .container {
+        background: #fff;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        max-width: 75%;
+        margin: 40px auto;
+        color: #333;
+    }
+
+    h2, h4 {
+        color: #8B0000; /* Bordo renk */
+        font-weight: bold;
+    }
+
+    p {
+        color: black;
+        font-size: 1.1rem;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+        border-radius: 5px;
+        padding: 15px;
+    }
+
+    .table {
+        width: 100%;
+        margin-bottom: 20px;
+        border-collapse: collapse;
+        background-color: black;
+    }
+
+    .table-bordered th, .table-bordered td {
+        border: 1px solid #dee2e6;
+        padding: 12px;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    .table thead th {
+        background-color: #8B0000; /* Bordo renk */
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .btn-primary {
+        background-color: #8B0000; /* Bordo renk */
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease-in-out;
+        text-decoration: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #660000; /* Daha koyu bordo */
+        }
+
+    .back-link {
+        color: #8B0000; /* Bordo renk */
+        text-decoration: none;
+        font-size: 1rem;
+        margin-top: 15px;
+        display: inline-block;
+    }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+    .table tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    hr {
+        border: 1px solid #8B0000; /* Bordo renk */
+    }
+</style>
+
+<div class="container">
+    <h2>Approve Courses</h2>
+    <h4>Advisor Information</h4>
+    <p><strong>Name:</strong> @Model.FullName @Model.Title</p>
+    <p><strong>Department:</strong> @Model.Department</p>
+
+    <hr />
+
+    @if (Model.Students == null || !Model.Students.Any())
+    {
+        <div class="alert alert-warning">
+            No students are assigned to you.
+        </div>
+    }
+    else
+    {
+        <h4>Student List</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Student ID</th>
+                    <th>Department</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var student in Model.Students)
+                {
+                    <tr>
+                        <td>@student.FirstName @student.LastName</td>
+                        <td>@student.StudentID</td>
+                        <td>@student.Department</td>
+                        <td>
+                            <a asp-controller="Advisors" asp-action="ViewStudentCourses" asp-route-studentId="@student.StudentID" class="btn btn-primary">
+                                View Courses
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <a href="https://localhost:7199/Account/LoginUser" class="back-link">Logout</a>
+    }
+</div>

@@ -64,6 +64,16 @@ namespace SmartCourseSelectorWeb.Controllers
 
                 if (existingRecords.Any())
                 {
+                    // Önceki derslerin kotasını arttır
+                    foreach (var record in existingRecords)
+                    {
+                        var course = await _context.Courses.FindAsync(record.CourseID);
+                        if (course != null)
+                        {
+                            course.Quota += 1; // Silinen dersin kotasını arttır
+                        }
+                    }
+
                     _context.UnapprovedSelections.RemoveRange(existingRecords);
                 }
 
@@ -83,7 +93,44 @@ namespace SmartCourseSelectorWeb.Controllers
                         CourseID = courseId
                     };
 
+                    // Yeni dersin kotasını azalt
+                    var course = await _context.Courses.FindAsync(courseId);
+                    if (course != null)
+                    {
+                        if (course.Quota > 0)
+                        {
+                            course.Quota -= 1; // Seçilen dersin kotasını azalt
+                        }
+                        else
+                        {
+                            return BadRequest($"The course {course.CourseName} is full and cannot be selected.");
+                        }
+                    }
+
                     _context.UnapprovedSelections.Add(unapprovedSelection);
+                }
+
+                var existingStudentRecords = _context.StudentCourseSelections
+                                .Where(x => x.StudentID == request.StudentId)
+                                .ToList();
+
+                if (existingStudentRecords.Any())
+                {
+                    _context.StudentCourseSelections.RemoveRange(existingStudentRecords);
+                }
+
+                // Yeni seçilen dersleri ekle
+                foreach (var courseId in request.SelectedCourseIds)
+                {
+                    var studentCourseSelection = new StudentCourseSelection
+                    {
+                        StudentID = request.StudentId,
+                        CourseID = courseId,
+                        IsApproved = false,
+                        SelectionDate = DateTime.Now
+                    };
+
+                    _context.StudentCourseSelections.Add(studentCourseSelection);
                 }
 
                 // Değişiklikleri kaydet
@@ -97,6 +144,7 @@ namespace SmartCourseSelectorWeb.Controllers
                 return StatusCode(500, new { Message = "An error occurred while updating courses.", Details = ex.Message });
             }
         }
+
 
 
         [HttpGet("CourseSelection")]

@@ -5,8 +5,8 @@
     <div id="studentInfo" data-student-id="@Model.Student.StudentID"></div>
 
     <form id="form" method="post" asp-action="SubmitSelectedCourses" asp-controller="Students">
-        <table class="table table-bordered">
-            <thead>
+        <table class="table table-hover table-striped table-bordered">
+            <thead class="table-dark">
                 <tr>
                     <th>Course Name</th>
                     <th>Mandatory</th>
@@ -17,14 +17,14 @@
             <tbody>
                 @foreach (var selection in Model.Course)
                 {
-                    @if (!@selection.IsMandatory)
+                    @if (!@selection.IsMandatory && selection.Quota > 0)
                     {
                         <tr>
                             <td>@selection.CourseName</td>
                             <td>@(selection.IsMandatory ? "Mandatory" : "Elective")</td>
                             <td>@selection.Credit</td>
                             <td>
-                                <input type="checkbox" name="SelectedCourseIds" value="@selection.CourseID" />
+                                <input type="checkbox" name="SelectedCourseIds" value="@selection.CourseID" class="form-check-input" />
                             </td>
                         </tr>
                     }
@@ -32,10 +32,11 @@
             </tbody>
         </table>
         <div class="form-group">
-            <button type="submit" id="submitBtn" class="btn btn-primary">Submit Selection</button>
+            <button type="submit" id="submitBtn" class="btn btn-danger">Submit Selection</button>
         </div>
     </form>
 </div>
+<button onclick="window.location.href='@Url.Action("CourseSelection", "Students", new { id = Model.Student.StudentID })'" class="btn btn-outline-secondary mt-3">Back</button>
 
 <div id="cardContainer"></div>
 
@@ -122,15 +123,7 @@
         // Kapatma butonu oluştur
         const closeButton = document.createElement("button");
         closeButton.textContent = "close";
-        closeButton.style.marginLeft = "5px";
-        closeButton.style.marginTop = "5px";
-        closeButton.style.border = "3px";
-        closeButton.style.background = "red";
-        closeButton.style.color = "white";
-        closeButton.style.padding = "5px 10px";
-        closeButton.style.cursor = "pointer";
-        closeButton.style.borderRadius = "50%";
-
+        closeButton.className = "btn-close ms-2";
         closeButton.addEventListener("click", function () {
             notification.remove();
         });
@@ -139,18 +132,6 @@
 
         // Bildirimi ekrana üstte yerleştir
         const cardContainer = document.getElementById("cardContainer");
-        notification.style.position = "fixed";
-        notification.style.top = "20px";
-        notification.style.right = "20px";
-        notification.style.background = "white";
-        notification.style.border = "1px solid #ccc";
-        notification.style.padding = "15px 20px";
-        notification.style.borderRadius = "10px";
-        notification.style.boxShadow = "2px 2px 10px rgba(0, 0, 0, 0.1)";
-        notification.style.display = "flex";
-        notification.style.alignItems = "center";
-        notification.style.zIndex = "1000";
-
         cardContainer.appendChild(notification);
 
         // Mesajı 3 saniye sonra kaldır
@@ -160,5 +141,46 @@
     }
 </script>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+    .table-container {
+        background-color: black;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        max-width: 90%;
+    }
+
+    .btn-danger {
+        background-color: #800000;
+        border-color: #800000;
+    }
+
+        .btn-danger:hover {
+            background-color: #a52a2a;
+            border-color: #a52a2a;
+        }
+
+    .notification {
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        z-index: 1000;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+    }
+
+        .notification.error {
+            border-color: #dc3545;
+        }
+
+        .notification.success {
+            border-color: #28a745;
+        }
+</style>
